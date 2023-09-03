@@ -6,7 +6,7 @@ import 'package:weather/features/feature_weather/domain/repository/weather_repos
 class GetWeatherUseCase extends UseCase <DataState<CurrentWeatherEntity>,String>{
   final WeatherRepository weatherRepository;
 
-  GetWeatherUseCase(this.weatherRepository);
+  GetWeatherUseCase({required this.weatherRepository});
   
   @override
   Future<DataState<CurrentWeatherEntity>> call(String param) {

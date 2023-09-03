@@ -11,7 +11,7 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
 
   final GetWeatherUseCase getWeatherUseCase;
 
-  WeatherBloc(this.getWeatherUseCase) : super(WeatherState(cwStatus: CWLoading())) { 
+  WeatherBloc({required this.getWeatherUseCase}) : super(WeatherState(cwStatus: CWLoading())) { 
 
     on<LoadCurrentWEvent>((event, emit) async {
 
