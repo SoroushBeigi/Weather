@@ -18,7 +18,7 @@ void main() async {
               create: (_) => locator<WeatherBloc>(),
             ),
           ],
-          child: const MainWrapper(),
+          child: MainWrapper(),
         )),
   );
 }
