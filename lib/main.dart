@@ -8,7 +8,6 @@ void main() async {
   
   //Calling GetIt Setup
   await setup();
-
   runApp(
     MaterialApp(
         debugShowCheckedModeBanner: false,
