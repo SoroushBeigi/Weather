@@ -10,7 +10,7 @@ class GetWeatherUseCase extends UseCase <DataState<CurrentWeatherEntity>,String>
   
   @override
   Future<DataState<CurrentWeatherEntity>> call(String param) {
-      return weatherRepository.fetchCurrentWeather(param);
+      return weatherRepository.fetchCurrentWeatherData(param);
   }
 
 

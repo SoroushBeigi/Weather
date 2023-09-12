@@ -11,7 +11,6 @@ class ApiProvider {
   final apiKey = PrivateConstants.apiKey;
 
   Future<dynamic> getCurrentWeather(cityName) async {
-
     final response = await _dio
         .get('${Constants.baseUrl}/data/2.5/weather', queryParameters: {
       'q': cityName,
@@ -23,28 +22,28 @@ class ApiProvider {
   }
 
   Future<dynamic> getWeeklyForecast(ForecastParams params) async {
+    final response = await _dio.get(
+      "${Constants.baseUrl}/data/2.5/onecall",
+      queryParameters: {
+        'lat': params.lat,
+        'lon': params.lon,
+        'exclude': 'minutely,hourly',
+        'appid': apiKey,
+        'units': 'metric'
+      },
+    );
 
-    // final response = await _dio.get(
-    //   '${Constants.baseUrl}/data/2.5/onecall',
-    //   queryParameters: {
-    //     'lat': params.lat,
-    //     'lon': params.long,
-    //     'exclude': 'minutely,hourly',
-    //     'appid': apiKey,
-    //     'units': 'metric'
-    //   },
-    // );
-      var response = await _dio.get(
-        "${Constants.baseUrl}/data/2.5/onecall",
+    return response;
+  }
+
+  Future<dynamic> getCitySuggestion(String query) async {
+    final response = await _dio.get(
+        "http://geodb-free-service.wirefreethought.com/v1/geo/cities",
         queryParameters: {
-          'lat': params.lat,
-          'lon': params.lon,
-          'exclude': 'minutely,hourly',
-          'appid': apiKey,
-          'units': 'metric'
-        },
-        );
-      
+          'limit': 7,
+          'offset': 0,
+          'namePrefix': query,
+        });
     return response;
   }
 }

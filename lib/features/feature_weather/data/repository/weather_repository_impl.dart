@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:weather/core/params/forecast_params.dart';
 import 'package:weather/core/recources/data_state.dart';
 import 'package:weather/features/feature_weather/data/data_source/remote/api_provider.dart';
+import 'package:weather/features/feature_weather/data/models/city_suggestion_model.dart';
 import 'package:weather/features/feature_weather/data/models/current_weather_model.dart';
 import 'package:weather/features/feature_weather/data/models/forecast_model.dart';
 import 'package:weather/features/feature_weather/domain/entities/current_weather_entity.dart';
@@ -14,7 +15,7 @@ class WeatherRepositoryImplementation extends WeatherRepository {
 
 
   @override
-  Future<DataState<CurrentWeatherEntity>> fetchCurrentWeather(String cityName) async {
+  Future<DataState<CurrentWeatherEntity>> fetchCurrentWeatherData(String cityName) async {
     try {
       Response response = await apiProvider.getCurrentWeather(cityName); 
       if(response.statusCode==200){
@@ -29,7 +30,7 @@ class WeatherRepositoryImplementation extends WeatherRepository {
   }
 
   @override
-  Future<DataState<ForecastEntity>> fetchForecastWeather(ForecastParams params) async {
+  Future<DataState<ForecastEntity>> fetchForecastWeatherData(ForecastParams params) async {
        try {
       Response response = await apiProvider.getWeeklyForecast(params); 
       if(response.statusCode==200){
@@ -41,5 +42,13 @@ class WeatherRepositoryImplementation extends WeatherRepository {
     } catch (e) {
       return const DataFailed("Connection Error!");
     }
+  }
+
+  @override
+  Future<List<Data>> fetchCitySuggestionData(String query) async {
+    final response = await apiProvider.getCitySuggestion(query);
+    final citySuggestionEntity = CitySuggestionModel.fromJson(response.data);
+    return citySuggestionEntity.data!;
+
   }
 }

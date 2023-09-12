@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:weather/core/params/forecast_params.dart';
 import 'package:weather/core/widgets/background.dart';
@@ -7,10 +8,12 @@ import 'package:weather/core/widgets/loading_widget.dart';
 import 'package:weather/features/feature_weather/data/models/forecast_model.dart';
 import 'package:weather/features/feature_weather/domain/entities/current_weather_entity.dart';
 import 'package:weather/features/feature_weather/domain/entities/forecast_entity.dart';
+import 'package:weather/features/feature_weather/domain/usecases/get_suggestion_usecase.dart';
 import 'package:weather/features/feature_weather/presentation/bloc/current_weather_status.dart';
 import 'package:weather/features/feature_weather/presentation/bloc/forecast_weather_status.dart';
 import 'package:weather/features/feature_weather/presentation/bloc/weather_bloc.dart';
 import 'package:weather/features/feature_weather/presentation/widgets/weekly_weather_item.dart';
+import 'package:weather/injections.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,6 +23,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final controller = TextEditingController();
+  GetSuggestionUsecase getSuggestionUsecase =
+      GetSuggestionUsecase(weatherRepository: locator());
+
   final cityName = 'Tehran';
   final pageController = PageController();
 
@@ -33,13 +40,50 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    //final width = MediaQuery.of(context).size.width;
+    final width = MediaQuery.of(context).size.width;
 
     return Container(
       color: Colors.black.withOpacity(0.5),
       child: SafeArea(
           child: Column(
         children: [
+          SizedBox(
+            height: height * 0.02,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: width * 0.03),
+            child: TypeAheadField(
+              textFieldConfiguration: TextFieldConfiguration(
+                controller: controller,
+                onSubmitted: onSubmitted,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge!
+                    .copyWith(fontSize: 20, color: Colors.white),
+                decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.only(left: 20),
+                  hintText: 'Enter a city name',
+                  hintStyle: TextStyle(color: Colors.white),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                  enabledBorder: OutlineInputBorder( borderSide: BorderSide(color: Colors.white),)
+                ),
+              ),
+              suggestionsCallback: (query){
+                return getSuggestionUsecase(query);},
+              itemBuilder: (context, itemData) => ListTile(
+                leading: const Icon(Icons.location_city),
+                title: Text(itemData.name!),
+                subtitle: Text('${itemData.region!}, ${itemData.country!}'),
+              ),
+              onSuggestionSelected: (suggestion) {
+                final cityName = suggestion.name!;
+                onSubmitted(cityName);
+              },
+            ),
+          ),
+
           //BlocBuilder for CurrentWeather loading.
           BlocBuilder<WeatherBloc, WeatherState>(
             buildWhen: (previous, current) {
@@ -214,23 +258,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                 final List<Daily> mainDaily =
                                     forecastDaysEntity.daily!;
 
-                                return SizedBox(
-                                  width: double.infinity,
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.horizontal,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: 7,
-                                    itemBuilder: (
-                                      BuildContext context,
-                                      int index,
-                                    ) {
-                                      return WeeklyWeatherItem(
-                                        daily: mainDaily[index + 1],
-                                      );
-                                    },
-                                  ),
+                                return ListView.builder(
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: 7,
+                                  itemBuilder: (
+                                    BuildContext context,
+                                    int index,
+                                  ) {
+                                    return WeeklyWeatherItem(
+                                      daily: mainDaily[index + 1],
+                                    );
+                                  },
                                 );
                               }
 
@@ -259,6 +298,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       )),
+    );
+  }
+
+  void onSubmitted(String cityName) {
+    controller.text = cityName;
+    BlocProvider.of<WeatherBloc>(context).add(
+      LoadCurrentWEvent(cityname: cityName),
     );
   }
 }

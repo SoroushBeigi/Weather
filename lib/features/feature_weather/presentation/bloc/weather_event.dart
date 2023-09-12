@@ -14,6 +14,10 @@ class LoadCurrentWEvent extends WeatherEvent{
 
 class LoadForecastEvent extends WeatherEvent{
   final ForecastParams forecastParams;
-
   const LoadForecastEvent({required this.forecastParams});
+}
+
+class SuggestionCityEvent extends WeatherEvent{
+  final String query;
+  const SuggestionCityEvent({required this.query});
 }

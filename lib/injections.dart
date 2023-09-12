@@ -18,10 +18,12 @@ setup() {
   ));
 
   //use cases
-  locator.registerSingleton<GetWeatherUseCase>(
-      GetWeatherUseCase(weatherRepository: locator()));
- locator.registerSingleton<GetForecastUseCase>(
-      GetForecastUseCase(weatherRepository: locator()));
+  locator.registerSingleton<GetWeatherUseCase>(GetWeatherUseCase(
+    weatherRepository: locator(),
+  ));
+  locator.registerSingleton<GetForecastUseCase>(GetForecastUseCase(
+    weatherRepository: locator(),
+  ));
   //blocs
   locator.registerSingleton<WeatherBloc>(
     WeatherBloc(

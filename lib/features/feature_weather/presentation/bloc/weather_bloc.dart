@@ -16,9 +16,9 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
   final GetWeatherUseCase getWeatherUseCase;
   final GetForecastUseCase getForecastUseCase;
 
-  WeatherBloc({required this.getForecastUseCase, required this.getWeatherUseCase})
+  WeatherBloc(
+      {required this.getForecastUseCase, required this.getWeatherUseCase})
       : super(WeatherState(cwStatus: CWLoading(), fwStatus: FWLoading())) {
-
     on<LoadCurrentWEvent>((event, emit) async {
       emit(state.copyWith(newCWStatus: CWLoading()));
       DataState dataState = await getWeatherUseCase(event.cityname);

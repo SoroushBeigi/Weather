@@ -11,7 +11,7 @@ class GetForecastUseCase extends UseCase <DataState<ForecastEntity>,ForecastPara
   
   @override
   Future<DataState<ForecastEntity>> call(ForecastParams param) {
-      return weatherRepository.fetchForecastWeather(param);
+      return weatherRepository.fetchForecastWeatherData(param);
   }
 
 
