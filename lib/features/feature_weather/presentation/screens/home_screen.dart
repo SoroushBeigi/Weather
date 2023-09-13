@@ -12,6 +12,7 @@ import 'package:weather/features/feature_weather/domain/usecases/get_suggestion_
 import 'package:weather/features/feature_weather/presentation/bloc/current_weather_status.dart';
 import 'package:weather/features/feature_weather/presentation/bloc/forecast_weather_status.dart';
 import 'package:weather/features/feature_weather/presentation/bloc/weather_bloc.dart';
+import 'package:weather/features/feature_weather/presentation/widgets/details_row.dart';
 import 'package:weather/features/feature_weather/presentation/widgets/weekly_weather_item.dart';
 import 'package:weather/injections.dart';
 
@@ -45,259 +46,281 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       color: Colors.black.withOpacity(0.5),
       child: SafeArea(
-          child: Column(
-        children: [
-          SizedBox(
-            height: height * 0.02,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-            child: TypeAheadField(
-              textFieldConfiguration: TextFieldConfiguration(
-                controller: controller,
-                onSubmitted: onSubmitted,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(fontSize: 20, color: Colors.white),
-                decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.only(left: 20),
-                  hintText: 'Enter a city name',
-                  hintStyle: TextStyle(color: Colors.white),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  enabledBorder: OutlineInputBorder( borderSide: BorderSide(color: Colors.white),)
-                ),
-              ),
-              suggestionsCallback: (query){
-                return getSuggestionUsecase(query);},
-              itemBuilder: (context, itemData) => ListTile(
-                leading: const Icon(Icons.location_city),
-                title: Text(itemData.name!),
-                subtitle: Text('${itemData.region!}, ${itemData.country!}'),
-              ),
-              onSuggestionSelected: (suggestion) {
-                final cityName = suggestion.name!;
-                onSubmitted(cityName);
-              },
+        child: Column(
+          children: [
+            SizedBox(
+              height: height * 0.02,
             ),
-          ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: width * 0.03),
+              child: TypeAheadField(
+                textFieldConfiguration: TextFieldConfiguration(
+                  controller: controller,
+                  onSubmitted: onSubmitted,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(fontSize: 20, color: Colors.white),
+                  decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.only(left: 20),
+                      hintText: 'Enter a city name',
+                      hintStyle: TextStyle(color: Colors.white),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      )),
+                ),
+                suggestionsCallback: (query) {
+                  return getSuggestionUsecase(query);
+                },
+                itemBuilder: (context, itemData) => ListTile(
+                  leading: const Icon(Icons.location_city),
+                  title: Text(itemData.name!),
+                  subtitle: Text('${itemData.region!}, ${itemData.country!}'),
+                ),
+                onSuggestionSelected: (suggestion) {
+                  final cityName = suggestion.name!;
+                  onSubmitted(cityName);
+                },
+              ),
+            ),
 
-          //BlocBuilder for CurrentWeather loading.
-          BlocBuilder<WeatherBloc, WeatherState>(
-            buildWhen: (previous, current) {
-              if (previous.cwStatus == current.cwStatus) {
-                return false;
-              }
-              return true;
-            },
-            builder: (context, state) {
-              if (state.cwStatus is CWLoading) {
-                return const Expanded(child: LoadingWidget());
-              }
+            //BlocBuilder for CurrentWeather loading.
+            BlocBuilder<WeatherBloc, WeatherState>(
+              buildWhen: (previous, current) {
+                if (previous.cwStatus == current.cwStatus) {
+                  return false;
+                }
+                return true;
+              },
+              builder: (context, state) {
+                if (state.cwStatus is CWLoading) {
+                  return const Expanded(child: LoadingWidget());
+                }
 
-              if (state.cwStatus is CWCompleted) {
-                final CWCompleted cwCompleted = state.cwStatus as CWCompleted;
-                final CurrentWeatherEntity currentCityEntity =
-                    cwCompleted.currentWeatherEntity;
+                if (state.cwStatus is CWCompleted) {
+                  final CWCompleted cwCompleted = state.cwStatus as CWCompleted;
+                  final CurrentWeatherEntity currentCityEntity =
+                      cwCompleted.currentWeatherEntity;
 
-                final forecastParams = ForecastParams(
-                  currentCityEntity.coord!.lat!,
-                  currentCityEntity.coord!.lon!,
-                );
+                  final forecastParams = ForecastParams(
+                    currentCityEntity.coord!.lat!,
+                    currentCityEntity.coord!.lon!,
+                  );
 
-                BlocProvider.of<WeatherBloc>(context).add(
-                  LoadForecastEvent(forecastParams: forecastParams),
-                );
+                  BlocProvider.of<WeatherBloc>(context).add(
+                    LoadForecastEvent(forecastParams: forecastParams),
+                  );
 
-                return Expanded(
+                  return Expanded(
                     child: ListView(
-                  children: [
-                    SizedBox(height: height * 0.02),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 400,
-                      child: PageView.builder(
-                        controller: pageController,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        allowImplicitScrolling: true,
-                        itemCount: 2,
-                        itemBuilder: (c, pos) {
-                          if (pos == 0) {
-                            return Column(
-                              children: [
-                                const SizedBox(height: 50),
-                                Text(
-                                  currentCityEntity.name!,
-                                  style: const TextStyle(
-                                    fontSize: 30,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                Text(
-                                  currentCityEntity.weather![0].description!,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.grey[300],
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                AppBackground.setIconForMain(
-                                  currentCityEntity.weather![0].description,
-                                ),
-                                const SizedBox(height: 20),
-                                Text(
-                                  '${currentCityEntity.main!.temp!.round()}\u00B0',
-                                  style: TextStyle(
-                                    fontSize: 40,
-                                    color: Colors.grey[300],
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                IntrinsicHeight(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Column(
-                                        children: [
-                                          Text(
-                                            'min',
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                color: Colors.grey[300]),
-                                          ),
-                                          const SizedBox(height: 10),
-                                          Text(
-                                            '${currentCityEntity.main!.tempMin!.round()}\u00B0',
-                                            style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20),
-                                          )
-                                        ],
-                                      ),
-                                      const VerticalDivider(
-                                        width: 20,
-                                        thickness: 1.5,
-                                        indent: 20,
-                                        endIndent: 0,
+                      children: [
+                        SizedBox(height: height * 0.02),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 400,
+                          child: PageView.builder(
+                            controller: pageController,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            allowImplicitScrolling: true,
+                            itemCount: 2,
+                            itemBuilder: (c, pos) {
+                              if (pos == 0) {
+                                return Column(
+                                  children: [
+                                    const SizedBox(height: 50),
+                                    Text(
+                                      currentCityEntity.name!,
+                                      style: const TextStyle(
+                                        fontSize: 30,
                                         color: Colors.white,
                                       ),
-                                      Column(
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Text(
+                                      currentCityEntity
+                                          .weather![0].description!,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.grey[300],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                    AppBackground.setIconForMain(
+                                      currentCityEntity.weather![0].description,
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Text(
+                                      '${currentCityEntity.main!.temp!.round()}\u00B0',
+                                      style: TextStyle(
+                                        fontSize: 40,
+                                        color: Colors.grey[300],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                    IntrinsicHeight(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
-                                          Text(
-                                            'max',
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                color: Colors.grey[300]),
+                                          Column(
+                                            children: [
+                                              Text(
+                                                'min',
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    color: Colors.grey[300]),
+                                              ),
+                                              const SizedBox(height: 10),
+                                              Text(
+                                                '${currentCityEntity.main!.tempMin!.round()}\u00B0',
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 20),
+                                              )
+                                            ],
                                           ),
-                                          const SizedBox(height: 10),
-                                          Text(
-                                            '${currentCityEntity.main!.tempMax!.round()}\u00B0',
-                                            style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20),
-                                          )
+                                          const VerticalDivider(
+                                            width: 20,
+                                            thickness: 1.5,
+                                            indent: 20,
+                                            endIndent: 0,
+                                            color: Colors.white,
+                                          ),
+                                          Column(
+                                            children: [
+                                              Text(
+                                                'max',
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    color: Colors.grey[300]),
+                                              ),
+                                              const SizedBox(height: 10),
+                                              Text(
+                                                '${currentCityEntity.main!.tempMax!.round()}\u00B0',
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 20),
+                                              )
+                                            ],
+                                          ),
                                         ],
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            );
-                          } else {
-                            return Container(
-                              color: Colors.red,
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                    Center(
-                      child: SmoothPageIndicator(
-                        controller: pageController,
-                        count: 2,
-                        effect: const WormEffect(
-                          dotHeight: 10,
-                          dotWidth: 10,
-                          spacing: 10,
-                          activeDotColor: Colors.white,
-                          dotColor: Colors.grey,
-                        ),
-                        onDotClicked: (index) {
-                          pageController.animateToPage(
-                            index,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.ease,
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 100,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10.0),
-                        child: Center(
-                          child: BlocBuilder<WeatherBloc, WeatherState>(
-                            builder: (BuildContext context, state) {
-                              /// show Loading State for Fw
-                              if (state.fwStatus is FWLoading) {
-                                return const LoadingWidget();
-                              }
-
-                              /// show Completed State for Fw
-                              if (state.fwStatus is FWCompleted) {
-                                /// casting
-                                final FWCompleted fwCompleted =
-                                    state.fwStatus as FWCompleted;
-                                final ForecastEntity forecastDaysEntity =
-                                    fwCompleted.forecastEntity;
-                                final List<Daily> mainDaily =
-                                    forecastDaysEntity.daily!;
-
-                                return ListView.builder(
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: 7,
-                                  itemBuilder: (
-                                    BuildContext context,
-                                    int index,
-                                  ) {
-                                    return WeeklyWeatherItem(
-                                      daily: mainDaily[index + 1],
-                                    );
-                                  },
+                                    ),
+                                  ],
+                                );
+                              } else {
+                                return Container(
+                                  color: Colors.red,
                                 );
                               }
-
-                              /// show Error State for Fw
-                              if (state.fwStatus is FWError) {
-                                final FWError fwError =
-                                    state.fwStatus as FWError;
-                                return Center(
-                                  child: Text(fwError.message),
-                                );
-                              }
-
-                              /// show Default State for Fw
-                              return Container();
                             },
                           ),
                         ),
-                      ),
-                    ),
-                  ],
-                ));
-              }
+                        Center(
+                          child: SmoothPageIndicator(
+                            controller: pageController,
+                            count: 2,
+                            effect: const WormEffect(
+                              dotHeight: 10,
+                              dotWidth: 10,
+                              spacing: 10,
+                              activeDotColor: Colors.white,
+                              dotColor: Colors.grey,
+                            ),
+                            onDotClicked: (index) {
+                              pageController.animateToPage(
+                                index,
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.ease,
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          color: Colors.grey[300],
+                          width: double.infinity,
+                          height: 2,
+                        ),
+                        const SizedBox(height: 5),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 100,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 10.0),
+                            child: Center(
+                              //BlocBuilder for Forecast Weather
+                              child: BlocBuilder<WeatherBloc, WeatherState>(
+                                builder: (BuildContext context, state) {
+                                  /// show Loading State for Fw
+                                  if (state.fwStatus is FWLoading) {
+                                    return const LoadingWidget();
+                                  }
 
-              return Container();
-            },
-          ),
-        ],
-      )),
+                                  /// show Completed State for Fw
+                                  if (state.fwStatus is FWCompleted) {
+                                    /// casting
+                                    final FWCompleted fwCompleted =
+                                        state.fwStatus as FWCompleted;
+                                    final ForecastEntity forecastDaysEntity =
+                                        fwCompleted.forecastEntity;
+                                    final List<Daily> mainDaily =
+                                        forecastDaysEntity.daily!;
+
+                                    return ListView.builder(
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: 7,
+                                      itemBuilder: (
+                                        BuildContext context,
+                                        int index,
+                                      ) {
+                                        return WeeklyWeatherItem(
+                                          daily: mainDaily[index + 1],
+                                        );
+                                      },
+                                    );
+                                  }
+
+                                  /// show Error State for Fw
+                                  if (state.fwStatus is FWError) {
+                                    final FWError fwError =
+                                        state.fwStatus as FWError;
+                                    return Center(
+                                      child: Text(fwError.message),
+                                    );
+                                  }
+
+                                  /// show Default State for Fw
+                                  return Container();
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Container(
+                          color: Colors.grey[300],
+                          width: double.infinity,
+                          height: 2,
+                        ),
+
+                        DetailsRow(currentCityEntity: currentCityEntity),
+
+                      ],
+                    ),
+                  );
+                }
+
+                return Container();
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 

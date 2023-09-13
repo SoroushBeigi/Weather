@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:equatable/equatable.dart';
 import 'package:floor/floor.dart';
 
@@ -10,7 +12,7 @@ class City extends Equatable{
 
   final String name;
 
-  City(this.name);
+  City({required this.name});
 
   @override
   List<Object?> get props => [name];

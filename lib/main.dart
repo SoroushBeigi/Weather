@@ -5,19 +5,20 @@ import 'package:weather/injections.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
-  
+  WidgetsFlutterBinding.ensureInitialized();
   //Calling GetIt Setup
   await setup();
   runApp(
     MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (_) => locator<WeatherBloc>(),
-            ),
-          ],
-          child: MainWrapper(),
-        )),
+      debugShowCheckedModeBanner: false,
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (_) => locator<WeatherBloc>(),
+          ),
+        ],
+        child: MainWrapper(),
+      ),
+    ),
   );
 }
