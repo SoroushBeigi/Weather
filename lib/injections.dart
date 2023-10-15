@@ -6,6 +6,7 @@ import 'package:weather/features/feature_bookmark/domain/usecases/all_cities_use
 import 'package:weather/features/feature_bookmark/domain/usecases/delete_city_usecase.dart';
 import 'package:weather/features/feature_bookmark/domain/usecases/save_city_usecase.dart';
 import 'package:weather/features/feature_bookmark/domain/usecases/search_city_usecase.dart';
+import 'package:weather/features/feature_bookmark/presentation/bloc/bloc/bookmark_bloc.dart';
 import 'package:weather/features/feature_weather/data/data_source/remote/api_provider.dart';
 import 'package:weather/features/feature_weather/data/repository/weather_repository_impl.dart';
 import 'package:weather/features/feature_weather/domain/repository/weather_repository.dart';
@@ -28,7 +29,7 @@ setup() async {
   locator.registerSingleton<WeatherRepository>(WeatherRepositoryImplementation(
     apiProvider: locator(),
   ));
-   locator.registerSingleton<CityRepository>(CityRepositoryImplementation(
+  locator.registerSingleton<CityRepository>(CityRepositoryImplementation(
     cityDao: database.cityDao,
   ));
 
@@ -40,26 +41,30 @@ setup() async {
     weatherRepository: locator(),
   ));
 
+  locator.registerSingleton<AllCitiesUseCase>(AllCitiesUseCase(
+    cityRepository: locator(),
+  ));
+  locator.registerSingleton<DeleteCityUsecase>(DeleteCityUsecase(
+    cityRepository: locator(),
+  ));
+  locator.registerSingleton<SaveCityUsecase>(SaveCityUsecase(
+    cityRepository: locator(),
+  ));
+  locator.registerSingleton<SearchCityUsecase>(SearchCityUsecase(
+    cityRepository: locator(),
+  ));
 
-    locator.registerSingleton<AllCitiesUseCase>(AllCitiesUseCase(
-    cityRepository: locator(),
-  ));
-    locator.registerSingleton<DeleteCityUsecase>(DeleteCityUsecase(
-    cityRepository: locator(),
-  ));
-     locator.registerSingleton<SaveCityUsecase>(SaveCityUsecase(
-    cityRepository: locator(),
-  ));
-     locator.registerSingleton<SearchCityUsecase>(SearchCityUsecase(
-    cityRepository: locator(),
-  ));
-
-  
   //blocs
   locator.registerSingleton<WeatherBloc>(
     WeatherBloc(
       getWeatherUseCase: locator(),
       getForecastUseCase: locator(),
+    ),
+  );
+  locator.registerSingleton<BookmarkBloc>(
+    BookmarkBloc(
+      saveCityUsecase: locator(),
+      searchCityUsecase: locator(),
     ),
   );
 }

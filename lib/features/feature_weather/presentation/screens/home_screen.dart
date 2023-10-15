@@ -5,6 +5,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:weather/core/params/forecast_params.dart';
 import 'package:weather/core/widgets/background.dart';
 import 'package:weather/core/widgets/loading_widget.dart';
+import 'package:weather/features/feature_bookmark/presentation/bloc/bloc/bookmark_bloc.dart';
 import 'package:weather/features/feature_weather/data/models/forecast_model.dart';
 import 'package:weather/features/feature_weather/domain/entities/current_weather_entity.dart';
 import 'package:weather/features/feature_weather/domain/entities/forecast_entity.dart';
@@ -12,6 +13,7 @@ import 'package:weather/features/feature_weather/domain/usecases/get_suggestion_
 import 'package:weather/features/feature_weather/presentation/bloc/current_weather_status.dart';
 import 'package:weather/features/feature_weather/presentation/bloc/forecast_weather_status.dart';
 import 'package:weather/features/feature_weather/presentation/bloc/weather_bloc.dart';
+import 'package:weather/features/feature_weather/presentation/widgets/bookmark_icon.dart';
 import 'package:weather/features/feature_weather/presentation/widgets/details_row.dart';
 import 'package:weather/features/feature_weather/presentation/widgets/weekly_weather_item.dart';
 import 'package:weather/injections.dart';
@@ -53,37 +55,82 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-              child: TypeAheadField(
-                textFieldConfiguration: TextFieldConfiguration(
-                  controller: controller,
-                  onSubmitted: onSubmitted,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .copyWith(fontSize: 20, color: Colors.white),
-                  decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(left: 20),
-                      hintText: 'Enter a city name',
-                      hintStyle: TextStyle(color: Colors.white),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TypeAheadField(
+                      textFieldConfiguration: TextFieldConfiguration(
+                        controller: controller,
+                        onSubmitted: onSubmitted,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge!
+                            .copyWith(fontSize: 20, color: Colors.white),
+                        decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.only(left: 20),
+                            hintText: 'Enter a city name',
+                            hintStyle: TextStyle(color: Colors.white),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            )),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      )),
-                ),
-                suggestionsCallback: (query) {
-                  return getSuggestionUsecase(query);
-                },
-                itemBuilder: (context, itemData) => ListTile(
-                  leading: const Icon(Icons.location_city),
-                  title: Text(itemData.name!),
-                  subtitle: Text('${itemData.region!}, ${itemData.country!}'),
-                ),
-                onSuggestionSelected: (suggestion) {
-                  final cityName = suggestion.name!;
-                  onSubmitted(cityName);
-                },
+                      suggestionsCallback: (query) {
+                        return getSuggestionUsecase(query);
+                      },
+                      itemBuilder: (context, itemData) => ListTile(
+                        leading: const Icon(Icons.location_city),
+                        title: Text(itemData.name!),
+                        subtitle:
+                            Text('${itemData.region!}, ${itemData.country!}'),
+                      ),
+                      onSuggestionSelected: (suggestion) {
+                        final cityName = suggestion.name!;
+                        onSubmitted(cityName);
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  BlocBuilder<WeatherBloc, WeatherState>(
+                    buildWhen: (previous, current) =>
+                        previous.cwStatus != current.cwStatus,
+                    builder: (context, state) {
+                      
+                      if (state.cwStatus is CWLoading) {
+                        return const CircularProgressIndicator();
+                      }
+
+                      if (state.cwStatus is CWError) {
+                        return IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.error,
+                            color: Colors.white,
+                            size: 35,
+                          ),
+                        );
+                      }
+
+                      if (state.cwStatus is CWCompleted) {
+                        final CWCompleted cwCompleted =
+                            state.cwStatus as CWCompleted;
+                        BlocProvider.of<BookmarkBloc>(context).add(
+                            GetCityByNameEvent(
+                                cityName:
+                                    cwCompleted.currentWeatherEntity.name!));
+                        return BookmarkIcon(
+                          cityName: cwCompleted.currentWeatherEntity.name!,
+                        );
+                      }
+
+                      return const SizedBox();
+                    },
+                  ),
+                ],
               ),
             ),
 
@@ -120,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         SizedBox(height: height * 0.02),
                         SizedBox(
                           width: double.infinity,
-                          height: 400,
+                          height: height * 0.5,
                           child: PageView.builder(
                             controller: pageController,
                             physics: const AlwaysScrollableScrollPhysics(),
@@ -130,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               if (pos == 0) {
                                 return Column(
                                   children: [
-                                    const SizedBox(height: 50),
+                                    const SizedBox(height: 10),
                                     Text(
                                       currentCityEntity.name!,
                                       style: const TextStyle(
@@ -307,9 +354,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: double.infinity,
                           height: 2,
                         ),
-
+                        const SizedBox(
+                          height: 10,
+                        ),
                         DetailsRow(currentCityEntity: currentCityEntity),
-
                       ],
                     ),
                   );

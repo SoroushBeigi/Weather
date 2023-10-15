@@ -14,7 +14,7 @@ class GetLoading extends GetCityStatus{
 }
 
 class GetCompleted extends GetCityStatus{
-  final City city;
+  final City? city;
   GetCompleted({required this.city});
   @override
   List<Object?> get props => [city];

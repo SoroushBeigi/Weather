@@ -12,8 +12,8 @@ class GetCityByNameEvent extends BookmarkEvent {
 }
 
 class SaveCityEvent extends BookmarkEvent {
-  final String name;
-  SaveCityEvent({required this.name});
+  final String cityName;
+  SaveCityEvent({required this.cityName});
 }
 
 class RemoveCityEvent extends BookmarkEvent {
