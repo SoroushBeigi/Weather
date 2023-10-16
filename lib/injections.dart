@@ -6,13 +6,14 @@ import 'package:weather/features/feature_bookmark/domain/usecases/all_cities_use
 import 'package:weather/features/feature_bookmark/domain/usecases/delete_city_usecase.dart';
 import 'package:weather/features/feature_bookmark/domain/usecases/save_city_usecase.dart';
 import 'package:weather/features/feature_bookmark/domain/usecases/search_city_usecase.dart';
-import 'package:weather/features/feature_bookmark/presentation/bloc/bloc/bookmark_bloc.dart';
 import 'package:weather/features/feature_weather/data/data_source/remote/api_provider.dart';
 import 'package:weather/features/feature_weather/data/repository/weather_repository_impl.dart';
 import 'package:weather/features/feature_weather/domain/repository/weather_repository.dart';
 import 'package:weather/features/feature_weather/domain/usecases/get_forecast_usecase.dart';
 import 'package:weather/features/feature_weather/domain/usecases/get_weather_usecase.dart';
 import 'package:weather/features/feature_weather/presentation/bloc/weather_bloc.dart';
+
+import 'features/feature_bookmark/presentation/bloc/bookmark_bloc.dart';
 
 GetIt locator = GetIt.I;
 

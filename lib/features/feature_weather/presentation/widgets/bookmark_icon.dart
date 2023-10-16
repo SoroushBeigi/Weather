@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather/features/feature_bookmark/domain/entities/city_entity.dart';
-import 'package:weather/features/feature_bookmark/presentation/bloc/bloc/bookmark_bloc.dart';
-import 'package:weather/features/feature_bookmark/presentation/bloc/bloc/get_city_status.dart';
-import 'package:weather/features/feature_bookmark/presentation/bloc/bloc/save_city_status.dart';
+import 'package:weather/features/feature_bookmark/presentation/bloc/save_city_status.dart';
+
+import '../../../feature_bookmark/presentation/bloc/bookmark_bloc.dart';
+import '../../../feature_bookmark/presentation/bloc/get_city_status.dart';
 
 class BookmarkIcon extends StatelessWidget {
   final String cityName;

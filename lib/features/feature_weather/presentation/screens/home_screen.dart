@@ -5,7 +5,6 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:weather/core/params/forecast_params.dart';
 import 'package:weather/core/widgets/background.dart';
 import 'package:weather/core/widgets/loading_widget.dart';
-import 'package:weather/features/feature_bookmark/presentation/bloc/bloc/bookmark_bloc.dart';
 import 'package:weather/features/feature_weather/data/models/forecast_model.dart';
 import 'package:weather/features/feature_weather/domain/entities/current_weather_entity.dart';
 import 'package:weather/features/feature_weather/domain/entities/forecast_entity.dart';
@@ -17,6 +16,8 @@ import 'package:weather/features/feature_weather/presentation/widgets/bookmark_i
 import 'package:weather/features/feature_weather/presentation/widgets/details_row.dart';
 import 'package:weather/features/feature_weather/presentation/widgets/weekly_weather_item.dart';
 import 'package:weather/injections.dart';
+
+import '../../../feature_bookmark/presentation/bloc/bookmark_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
