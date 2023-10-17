@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:weather/core/params/forecast_params.dart';
-import 'package:weather/core/widgets/background.dart';
 import 'package:weather/core/widgets/loading_widget.dart';
 import 'package:weather/features/feature_weather/data/models/forecast_model.dart';
 import 'package:weather/features/feature_weather/domain/entities/current_weather_entity.dart';
@@ -12,6 +10,8 @@ import 'package:weather/features/feature_weather/presentation/bloc/current_weath
 import 'package:weather/features/feature_weather/presentation/bloc/forecast_weather_status.dart';
 import 'package:weather/features/feature_weather/presentation/bloc/weather_bloc.dart';
 import 'package:weather/features/feature_weather/presentation/widgets/bookmark_icon.dart';
+import 'package:weather/features/feature_weather/presentation/widgets/city_temp.dart';
+import 'package:weather/features/feature_weather/presentation/widgets/city_text_field.dart';
 import 'package:weather/features/feature_weather/presentation/widgets/details_row.dart';
 import 'package:weather/features/feature_weather/presentation/widgets/weekly_weather_item.dart';
 import 'package:weather/injections.dart';
@@ -60,43 +60,13 @@ class _HomeScreenState extends State<HomeScreen>
               child: Row(
                 children: [
                   Expanded(
-                    child: TypeAheadField(
-                      textFieldConfiguration: TextFieldConfiguration(
-                        controller: controller,
-                        onSubmitted: onSubmitted,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(fontSize: 20, color: Colors.white),
-                        decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.only(left: 20),
-                            hintText: 'Enter a city name',
-                            hintStyle: TextStyle(color: Colors.white),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            )),
-                      ),
-                      suggestionsCallback: (query) {
-                        return getSuggestionUsecase(query);
-                      },
-                      itemBuilder: (context, itemData) => ListTile(
-                        leading: const Icon(Icons.location_city),
-                        title: Text(itemData.name!),
-                        subtitle:
-                            Text('${itemData.region!}, ${itemData.country!}'),
-                      ),
-                      onSuggestionSelected: (suggestion) {
-                        final cityName = suggestion.name!;
-                        onSubmitted(cityName);
-                      },
+                    child: CityTextField(
+                      onSubmitted: onSubmitted,
+                      controller: controller,
+                      getSuggestionUsecase: getSuggestionUsecase,
                     ),
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
+                  const SizedBox(width: 10),
                   BlocBuilder<WeatherBloc, WeatherState>(
                     buildWhen: (previous, current) =>
                         previous.cwStatus != current.cwStatus,
@@ -167,90 +137,10 @@ class _HomeScreenState extends State<HomeScreen>
                       children: [
                         SizedBox(height: height * 0.02),
                         SizedBox(
-                          width: double.infinity,
-                          height: height * 0.5,
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 10),
-                              Text(
-                                currentCityEntity.name!,
-                                style: const TextStyle(
-                                  fontSize: 30,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              Text(
-                                currentCityEntity.weather![0].description!,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.grey[300],
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              AppBackground.setIconForMain(
-                                currentCityEntity.weather![0].description,
-                              ),
-                              const SizedBox(height: 20),
-                              Text(
-                                '${currentCityEntity.main!.temp!.round()}\u00B0',
-                                style: TextStyle(
-                                  fontSize: 40,
-                                  color: Colors.grey[300],
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              IntrinsicHeight(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Text(
-                                          'min',
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              color: Colors.grey[300]),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Text(
-                                          '${currentCityEntity.main!.tempMin!.round()}\u00B0',
-                                          style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 20),
-                                        )
-                                      ],
-                                    ),
-                                    const VerticalDivider(
-                                      width: 20,
-                                      thickness: 1.5,
-                                      indent: 20,
-                                      endIndent: 0,
-                                      color: Colors.white,
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text(
-                                          'max',
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              color: Colors.grey[300]),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Text(
-                                          '${currentCityEntity.main!.tempMax!.round()}\u00B0',
-                                          style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 20),
-                                        )
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                            width: double.infinity,
+                            height: height * 0.5,
+                            child: CityTemp(
+                                currentWeatherEntity: currentCityEntity)),
                         const SizedBox(height: 10),
                         Container(
                           color: Colors.grey[300],
