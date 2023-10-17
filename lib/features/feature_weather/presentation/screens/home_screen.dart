@@ -26,7 +26,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
   final controller = TextEditingController();
   GetSuggestionUsecase getSuggestionUsecase =
       GetSuggestionUsecase(weatherRepository: locator());
@@ -379,4 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
       LoadCurrentWEvent(cityname: cityName),
     );
   }
+  
+  @override
+  bool get wantKeepAlive => true;
 }

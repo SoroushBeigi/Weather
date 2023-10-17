@@ -12,7 +12,7 @@ class MainWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final pages = [
       const HomeScreen(),
-      const BookmarkScreen(),
+      BookmarkScreen(pageController: pageController),
     ];
 
     return Scaffold(

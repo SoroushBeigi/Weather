@@ -66,6 +66,8 @@ setup() async {
     BookmarkBloc(
       saveCityUsecase: locator(),
       searchCityUsecase: locator(),
+      allCitiesUseCase: locator(),
+      deleteCityUsecase: locator(),
     ),
   );
 }
