@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:weather/core/params/forecast_params.dart';
 import 'package:weather/core/widgets/background.dart';
 import 'package:weather/core/widgets/loading_widget.dart';
@@ -26,7 +25,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with AutomaticKeepAliveClientMixin {
   final controller = TextEditingController();
   GetSuggestionUsecase getSuggestionUsecase =
       GetSuggestionUsecase(weatherRepository: locator());
@@ -43,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 
@@ -100,7 +101,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                     buildWhen: (previous, current) =>
                         previous.cwStatus != current.cwStatus,
                     builder: (context, state) {
-                      
                       if (state.cwStatus is CWLoading) {
                         return const CircularProgressIndicator();
                       }
@@ -169,122 +169,86 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                         SizedBox(
                           width: double.infinity,
                           height: height * 0.5,
-                          child: PageView.builder(
-                            controller: pageController,
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            allowImplicitScrolling: true,
-                            itemCount: 2,
-                            itemBuilder: (c, pos) {
-                              if (pos == 0) {
-                                return Column(
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 10),
+                              Text(
+                                currentCityEntity.name!,
+                                style: const TextStyle(
+                                  fontSize: 30,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Text(
+                                currentCityEntity.weather![0].description!,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.grey[300],
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              AppBackground.setIconForMain(
+                                currentCityEntity.weather![0].description,
+                              ),
+                              const SizedBox(height: 20),
+                              Text(
+                                '${currentCityEntity.main!.temp!.round()}\u00B0',
+                                style: TextStyle(
+                                  fontSize: 40,
+                                  color: Colors.grey[300],
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              IntrinsicHeight(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      currentCityEntity.name!,
-                                      style: const TextStyle(
-                                        fontSize: 30,
-                                        color: Colors.white,
-                                      ),
+                                    Column(
+                                      children: [
+                                        Text(
+                                          'min',
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.grey[300]),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          '${currentCityEntity.main!.tempMin!.round()}\u00B0',
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                        )
+                                      ],
                                     ),
-                                    const SizedBox(height: 20),
-                                    Text(
-                                      currentCityEntity
-                                          .weather![0].description!,
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.grey[300],
-                                      ),
+                                    const VerticalDivider(
+                                      width: 20,
+                                      thickness: 1.5,
+                                      indent: 20,
+                                      endIndent: 0,
+                                      color: Colors.white,
                                     ),
-                                    const SizedBox(height: 20),
-                                    AppBackground.setIconForMain(
-                                      currentCityEntity.weather![0].description,
-                                    ),
-                                    const SizedBox(height: 20),
-                                    Text(
-                                      '${currentCityEntity.main!.temp!.round()}\u00B0',
-                                      style: TextStyle(
-                                        fontSize: 40,
-                                        color: Colors.grey[300],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 20),
-                                    IntrinsicHeight(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Column(
-                                            children: [
-                                              Text(
-                                                'min',
-                                                style: TextStyle(
-                                                    fontSize: 18,
-                                                    color: Colors.grey[300]),
-                                              ),
-                                              const SizedBox(height: 10),
-                                              Text(
-                                                '${currentCityEntity.main!.tempMin!.round()}\u00B0',
-                                                style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 20),
-                                              )
-                                            ],
-                                          ),
-                                          const VerticalDivider(
-                                            width: 20,
-                                            thickness: 1.5,
-                                            indent: 20,
-                                            endIndent: 0,
-                                            color: Colors.white,
-                                          ),
-                                          Column(
-                                            children: [
-                                              Text(
-                                                'max',
-                                                style: TextStyle(
-                                                    fontSize: 18,
-                                                    color: Colors.grey[300]),
-                                              ),
-                                              const SizedBox(height: 10),
-                                              Text(
-                                                '${currentCityEntity.main!.tempMax!.round()}\u00B0',
-                                                style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 20),
-                                              )
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                    Column(
+                                      children: [
+                                        Text(
+                                          'max',
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.grey[300]),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          '${currentCityEntity.main!.tempMax!.round()}\u00B0',
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                        )
+                                      ],
                                     ),
                                   ],
-                                );
-                              } else {
-                                return Container(
-                                  color: Colors.red,
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                        Center(
-                          child: SmoothPageIndicator(
-                            controller: pageController,
-                            count: 2,
-                            effect: const WormEffect(
-                              dotHeight: 10,
-                              dotWidth: 10,
-                              spacing: 10,
-                              activeDotColor: Colors.white,
-                              dotColor: Colors.grey,
-                            ),
-                            onDotClicked: (index) {
-                              pageController.animateToPage(
-                                index,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.ease,
-                              );
-                            },
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -379,7 +343,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       LoadCurrentWEvent(cityname: cityName),
     );
   }
-  
+
   @override
   bool get wantKeepAlive => true;
 }

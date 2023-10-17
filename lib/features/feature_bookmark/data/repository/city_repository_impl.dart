@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:weather/core/recources/data_state.dart';
 import 'package:weather/features/feature_bookmark/data/data_source/local/city_dao.dart';
 import 'package:weather/features/feature_bookmark/domain/entities/city_entity.dart';
@@ -15,7 +16,7 @@ class CityRepositoryImplementation extends CityRepository {
       return DataSuccess(cityName);
     } catch (e) {
       final exception = e.toString();
-      print(exception);
+      debugPrint(exception);
       return DataFailed(exception);
     }
   }
@@ -27,7 +28,7 @@ class CityRepositoryImplementation extends CityRepository {
       return DataSuccess(cities);
     } catch (e) {
       final exception = e.toString();
-      print(exception);
+      debugPrint(exception);
       return DataFailed(exception);
     }
   }
@@ -39,7 +40,7 @@ class CityRepositoryImplementation extends CityRepository {
       return DataSuccess(city);
     } catch (e) {
       final exception = e.toString();
-      print(exception);
+      debugPrint(exception);
       return DataFailed(exception);
     }
   }
@@ -61,7 +62,7 @@ class CityRepositoryImplementation extends CityRepository {
     } catch (e) {
 
       final exception = e.toString();
-      print(exception);
+      debugPrint(exception);
       return DataFailed(exception);
     }
   }

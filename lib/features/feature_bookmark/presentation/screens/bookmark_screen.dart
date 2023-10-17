@@ -90,7 +90,7 @@ class BookmarkScreen extends StatelessWidget {
                                         borderRadius: const BorderRadius.all(
                                           Radius.circular(20),
                                         ),
-                                        color: Colors.black!.withOpacity(0.2),
+                                        color: Colors.black.withOpacity(0.2),
                                       ),
                                       padding: const EdgeInsets.only(left: 20),
                                       child: Row(
