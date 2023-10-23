@@ -1,5 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:weather/core/params/forecast_params.dart';
@@ -19,28 +21,34 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
   WeatherBloc(
       {required this.getForecastUseCase, required this.getWeatherUseCase})
       : super(WeatherState(cwStatus: CWLoading(), fwStatus: FWLoading())) {
-    on<LoadCurrentWEvent>((event, emit) async {
-      emit(state.copyWith(newCWStatus: CWLoading()));
-      DataState dataState = await getWeatherUseCase(event.cityname);
+    on<LoadCurrentWEvent>(_loadCurrentEvent);
 
-      if (dataState is DataSuccess) {
-        emit(state.copyWith(newCWStatus: CWCompleted(dataState.data)));
-      }
-      if (dataState is DataFailed) {
-        emit(state.copyWith(newCWStatus: CWError(dataState.error!)));
-      }
-    });
+    on<LoadForecastEvent>(_loadForecast);
+  }
 
-    on<LoadForecastEvent>((event, emit) async {
-      emit(state.copyWith(newFWStatus: FWLoading()));
-      DataState dataState = await getForecastUseCase(event.forecastParams);
+  Future<void> _loadCurrentEvent(
+      LoadCurrentWEvent event, Emitter<WeatherState> emit) async {
+    emit(state.copyWith(newCWStatus: CWLoading()));
+    DataState dataState = await getWeatherUseCase(event.cityname);
 
-      if (dataState is DataSuccess) {
-        emit(state.copyWith(newFWStatus: FWCompleted(dataState.data)));
-      }
-      if (dataState is DataFailed) {
-        emit(state.copyWith(newFWStatus: FWError(dataState.error!)));
-      }
-    });
+    if (dataState is DataSuccess) {
+      emit(state.copyWith(newCWStatus: CWCompleted(dataState.data)));
+    }
+    if (dataState is DataFailed) {
+      emit(state.copyWith(newCWStatus: CWError(dataState.error!)));
+    }
+  }
+
+  Future<void> _loadForecast(
+      LoadForecastEvent event, Emitter<WeatherState> emit) async {
+    emit(state.copyWith(newFWStatus: FWLoading()));
+    DataState dataState = await getForecastUseCase(event.forecastParams);
+
+    if (dataState is DataSuccess) {
+      emit(state.copyWith(newFWStatus: FWCompleted(dataState.data)));
+    }
+    if (dataState is DataFailed) {
+      emit(state.copyWith(newFWStatus: FWError(dataState.error!)));
+    }
   }
 }
