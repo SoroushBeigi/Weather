@@ -6,8 +6,8 @@ workflows:
     environment:
       android_signing:
         - keystore_reference
-      groups:
-        - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS)
+      # groups:
+      #   - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS)
       vars:
         PACKAGE_NAME: "ir.soroush.weather" # <-- Put your package name here
         GOOGLE_PLAY_TRACK: "alpha"
@@ -43,10 +43,10 @@ workflows:
         notify:
           success: true
           failure: false
-      google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: $GOOGLE_PLAY_TRACK
-        submit_as_draft: true
+      # google_play:
+      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+      #   track: $GOOGLE_PLAY_TRACK
+      #   submit_as_draft: true
   ios-workflow:
     name: iOS Workflow
     instance_type: mac_mini_m1
@@ -56,7 +56,7 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: io.codemagic.flutteryaml
+        bundle_identifier: ir.soroush.weather
       vars:
         APP_ID: 1111111111 # <-- Put your APP ID here
       flutter: stable
