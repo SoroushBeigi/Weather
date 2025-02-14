@@ -138,71 +138,71 @@ class _HomeScreenState extends State<HomeScreen>
                         SizedBox(height: height * 0.02),
                         SizedBox(
                             width: double.infinity,
-                            height: height * 0.5,
+                            height: height * 0.55,
                             child: CityTemp(
                                 currentWeatherEntity: currentCityEntity)),
                         const SizedBox(height: 10),
-                        Container(
-                          color: Colors.grey[300],
-                          width: double.infinity,
-                          height: 2,
-                        ),
-                        const SizedBox(height: 5),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 100,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 10.0),
-                            child: Center(
-                              //BlocBuilder for Forecast Weather
-                              child: BlocBuilder<WeatherBloc, WeatherState>(
-                                builder: (BuildContext context, state) {
-                                  /// show Loading State for Fw
-                                  if (state.fwStatus is FWLoading) {
-                                    return const LoadingWidget();
-                                  }
+                        // Container(
+                        //   color: Colors.grey[300],
+                        //   width: double.infinity,
+                        //   height: 2,
+                        // ),
+                        // const SizedBox(height: 5),
+                        // SizedBox(
+                        //   width: double.infinity,
+                        //   height: 100,
+                        //   child: Padding(
+                        //     padding: const EdgeInsets.only(left: 10.0),
+                        //     child: Center(
+                        //       //BlocBuilder for Forecast Weather
+                        //       child: BlocBuilder<WeatherBloc, WeatherState>(
+                        //         builder: (BuildContext context, state) {
+                        //           /// show Loading State for Fw
+                        //           if (state.fwStatus is FWLoading) {
+                        //             return const LoadingWidget();
+                        //           }
 
-                                  /// show Completed State for Fw
-                                  if (state.fwStatus is FWCompleted) {
-                                    /// casting
-                                    final FWCompleted fwCompleted =
-                                        state.fwStatus as FWCompleted;
-                                    final ForecastEntity forecastDaysEntity =
-                                        fwCompleted.forecastEntity;
-                                    final List<Daily> mainDaily =
-                                        forecastDaysEntity.daily!;
+                        //           /// show Completed State for Fw
+                        //           if (state.fwStatus is FWCompleted) {
+                        //             /// casting
+                        //             final FWCompleted fwCompleted =
+                        //                 state.fwStatus as FWCompleted;
+                        //             final ForecastEntity forecastDaysEntity =
+                        //                 fwCompleted.forecastEntity;
+                        //             final List<Daily> mainDaily =
+                        //                 forecastDaysEntity.daily!;
 
-                                    return ListView.builder(
-                                      shrinkWrap: true,
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: 7,
-                                      itemBuilder: (
-                                        BuildContext context,
-                                        int index,
-                                      ) {
-                                        return WeeklyWeatherItem(
-                                          daily: mainDaily[index + 1],
-                                        );
-                                      },
-                                    );
-                                  }
+                        //             return ListView.builder(
+                        //               shrinkWrap: true,
+                        //               scrollDirection: Axis.horizontal,
+                        //               itemCount: 7,
+                        //               itemBuilder: (
+                        //                 BuildContext context,
+                        //                 int index,
+                        //               ) {
+                        //                 return WeeklyWeatherItem(
+                        //                   daily: mainDaily[index + 1],
+                        //                 );
+                        //               },
+                        //             );
+                        //           }
 
-                                  /// show Error State for Fw
-                                  if (state.fwStatus is FWError) {
-                                    final FWError fwError =
-                                        state.fwStatus as FWError;
-                                    return Center(
-                                      child: Text(fwError.message),
-                                    );
-                                  }
+                        //           /// show Error State for Fw
+                        //           if (state.fwStatus is FWError) {
+                        //             final FWError fwError =
+                        //                 state.fwStatus as FWError;
+                        //             return Center(
+                        //               child: Text(fwError.message),
+                        //             );
+                        //           }
 
-                                  /// show Default State for Fw
-                                  return Container();
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
+                        //           /// show Default State for Fw
+                        //           return Container();
+                        //         },
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                         const SizedBox(height: 5),
                         Container(
                           color: Colors.grey[300],
